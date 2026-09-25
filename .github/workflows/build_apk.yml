@@ -18,7 +18,7 @@ jobs:
 
       - name: Reconstruct Android Project
         run: |
-          flutter create . --platforms=android --org=com.matjari.app
+          flutter create . --project-name=matjari_app --platforms=android --org=com.matjari.app
 
       - name: Install Dependencies
         run: flutter pub get
