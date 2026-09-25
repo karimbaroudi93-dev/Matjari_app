@@ -1,4 +1,4 @@
-name: Build and Deploy Matjari (Android & Web)
+name: Build and Deploy Matjari (Android APK, AAB & Web)
 
 on:
   push:
@@ -35,6 +35,9 @@ jobs:
       - name: Build Android APK
         run: flutter build apk --release
 
+      - name: Build Android App Bundle (AAB)
+        run: flutter build appbundle --release
+
       - name: Build Web App
         run: flutter build web --base-href "/${{ github.event.repository.name }}/"
 
@@ -43,6 +46,12 @@ jobs:
         with:
           name: matjari-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload AAB Artifact for Google Play
+        uses: actions/upload-artifact@v4
+        with:
+          name: matjari-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
 
       - name: Upload Web Artifact
         uses: actions/upload-pages-artifact@v3
