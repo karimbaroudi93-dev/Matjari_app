@@ -1,9 +1,18 @@
-name: Build Matjari APK
+name: Build and Deploy Matjari (Android & Web)
 
 on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -16,17 +25,37 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: Reconstruct Android Project
+      - name: Reconstruct Project Files
         run: |
-          flutter create . --project-name=matjari_app --platforms=android --org=com.matjari.app
+          flutter create . --project-name=matjari_app --platforms=android,web --org=com.matjari.app
 
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Build Android APK
         run: flutter build apk --release
 
-      - uses: actions/upload-artifact@v4
+      - name: Build Web App
+        run: flutter build web --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: matjari-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload Web Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy-web:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
