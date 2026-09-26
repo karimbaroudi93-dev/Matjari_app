@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Java 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -31,14 +31,14 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Create Web and Android Platforms
+      - name: Re-create Project Structure
         run: |
-          flutter create . --platforms=web,android --org=com.matjari.app
+          flutter create . --project-name=matjari_app --platforms=web,android --org=com.matjari.app
 
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Web Version
+      - name: Build Web App
         run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
 
       - name: Upload Web Artifact
