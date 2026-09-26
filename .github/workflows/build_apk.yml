@@ -1,4 +1,4 @@
-name: Build Android and Web
+name: Deploy Matjari App
 
 on:
   push:
@@ -15,61 +15,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Create Platform Files
-        run: flutter create . --project-name=matjari_app --org=com.matjari.app
+      - name: Enable Web Platform
+        run: flutter config --enable-web
 
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Web App
+      - name: Build Web Version
         run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
-
-      - name: Build Android APK
-        run: flutter build apk --release
-
-      - name: Build Android App Bundle (AAB)
-        run: flutter build appbundle --release
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: matjari-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Upload AAB Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: matjari-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
 
       - name: Upload Web Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
 
-  deploy-web:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
