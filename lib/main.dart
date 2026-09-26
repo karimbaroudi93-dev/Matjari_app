@@ -56,7 +56,6 @@ class _MatjariAppState extends State<MatjariApp> {
     return MaterialApp(
       title: _isArabic ? 'متجري | Matjari' : 'Matjari App',
       debugShowCheckedModeBanner: false,
-      locale: Locale(_isArabic ? 'ar' : 'en'),
       theme: ThemeData(
         primarySwatch: Colors.green,
         primaryColor: const Color(0xFF2E7D32),
@@ -265,10 +264,10 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           ? (_selectedCategoryAr == 'الكل' || p.categoryAr == _selectedCategoryAr)
           : (_selectedCategoryEn == 'All' || p.categoryEn == _selectedCategoryEn);
       
-      final name = ar ? p.nameAr : p.nameEn;
-      final store = ar ? p.storeAr : p.storeEn;
-      final searchMatch = name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          store.toLowerCase().contains(_searchQuery.toLowerCase());
+      final productName = ar ? p.nameAr : p.nameEn;
+      final storeName = ar ? p.storeAr : p.storeEn;
+      final searchMatch = productName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          storeName.toLowerCase().contains(_searchQuery.toLowerCase());
 
       return categoryMatch && searchMatch;
     }).toList();
